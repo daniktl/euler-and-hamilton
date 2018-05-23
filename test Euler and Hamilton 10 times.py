@@ -24,7 +24,6 @@ def eulerCykl(graph):
 def eulerCyklTemp(start):
     global cycle
     # return if vertex already exist
-    if start.name in cycle: return
     for i in start.next:
         # remove from adjacency list of those vertexes and go next recursive
         start.next.remove(i)
@@ -94,6 +93,8 @@ def makeList():
             tempNext.next.append(temp)
             temp.next.append(tempNext)
             edges += 1
+    for i in adjacencyList:
+        i.next = sorted(i.next, key=lambda x: x.name)
     # print("Adjacency list of graph")
     # for i in adjacencyList:
     #     print(i.name, [j.name for j in i.next])
@@ -144,8 +145,7 @@ def test1():
     minimum = input("Enter start point of test (number of vertexes): ")
     maximum = input("Enter finish point of test: ")
     if maximum.isdigit() and minimum.isdigit() and int(minimum) >= 10:
-        # for again in range(10):
-        if True:
+        for again in range(10):
             hamiltonTime, hamilton, euler, eulerTime = [], [], [], []
             maximum, minimum = int(maximum), int(minimum)
             nList = []
@@ -168,10 +168,10 @@ def test1():
                 eulerCykl(adjacencyList)
                 finishTimeEul = time.clock() - startTimeEul
                 eulerTime.append(finishTimeEul)
-            file1 = open("hamilton70.txt", "a")
+            file1 = open("hamilton{}.txt".format(int(percent*100)), "a")
             file1.write("Test from {} to {}\n".format(minimum, maximum) + str(nList) + "\n" + str(hamiltonTime) + "\n")
             file1.close()
-            file2 = open("euler70.txt", "a")
+            file2 = open("euler{}.txt".format(int(percent*100)), "a")
             file2.write("Test from {} to {}\n".format(minimum, maximum) +  str(nList) + "\n" + str(eulerTime) + "\n")
             file2.close()
         print("finished")
@@ -214,11 +214,11 @@ def test2():
 
 if __name__ == "__main__":
     # size up recursion limit
-    sys.setrecursionlimit(100000000)
+    sys.setrecursionlimit(1048576)
     percent = 0.7
     # size up stack
     if os.name == "posix":
-        os.system("ulimit -S -s 10000000 2>/dev/null")
+        os.system("ulimit -S -s 1048576")
         print("Changed size of stack")
     else: print("{:!^140}".format("I think that you computer won't works with more then 250 vertexes"))
     possible = True
@@ -230,7 +230,10 @@ if __name__ == "__main__":
                 "3 \t to change num of edges (percents from all possible)\n"
                 "4 \t to exit\n")
         if opt.isdigit():
-            if int(opt) == 1: test1()
+            if int(opt) == 1:
+                test1()
+                percent = 0.3
+                test1()
             elif int(opt) == 2: test2()
             elif int(opt) == 3: percent = int(input("Enter number in percents without sign: "))/100
             else: exit = True

@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-for ls in [["euler", "euler70"], ["hamilton", "hamilton70"], ["nothamilton"]]:
+for ls in [["euler30.0", "euler70.0"], ["hamilton30.0", "hamilton70.0"], ["nothamilton"]]:
     for name in ls:
         data = open("{}.txt".format(name), "r").read().split("\n")
         x = []
@@ -22,7 +22,7 @@ for ls in [["euler", "euler70"], ["hamilton", "hamilton70"], ["nothamilton"]]:
         print(x, y)
         plt.plot(y, x)
     if len(ls) == 2 : plt.legend(["30%", "70%"])
-    plt.title(ls[0])
+    plt.title(ls[0][:-4])
     plt.xlabel("n (num of edges)")
     plt.ylabel("time (seconds)")
     plt.savefig(ls[0]+".jpg")
