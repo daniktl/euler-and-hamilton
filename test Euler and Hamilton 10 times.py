@@ -10,7 +10,7 @@ def eulerCykl(graph):
     global yeah, find, cycle
     for i in graph:
         # check if vertex has even length of adjacency list
-        if len(i.next) % 2 == 1 or len(i.next) == 0:
+        if len(i.next) % 2 == 1:
             print("Oops, Euler's cycle was not found")
             return
     yeah = True
@@ -24,10 +24,9 @@ def eulerCykl(graph):
 def eulerCyklTemp(start):
     global cycle
     # return if vertex already exist
-    if start.name in cycle:
-        return
+    if start.name in cycle: return
     for i in start.next:
-    # remove from adjacency list of those vertexes and go next recursive
+        # remove from adjacency list of those vertexes and go next recursive
         start.next.remove(i)
         i.next.remove(start)
         eulerCyklTemp(i)
@@ -37,41 +36,34 @@ def eulerCyklTemp(start):
 
 def hamiltonCycle(graph):
     global yeah, solution, perm
-    perm = 0
-    solution = []
-    temp = random.choice(graph)
+    perm, solution, temp = 0, [], random.choice(graph)
     hamiltonCycleTemp(temp)
-    if len(solution) > 0:
-        print([j.name for j in solution])
-    else:
-        print("Graph has no Hamilton's cycle")
+    if len(solution) > 0: print([j.name for j in solution])
+    else: print("Graph has no Hamilton's cycle")
     print("Number of permutations that was used to found Hamilton's cycle ", perm)
 
 def hamiltonCycleTemp(start):
-    global yeah, perm
+    global yeah, perm, solution
+    # stop if found
+    if yeah: return
     # stop if more then 20 seconds
     if not possible:
         if time.clock() - startTimeHam > 20:
             yeah = True
             return
     perm += 1
-    # stop if found
-    if yeah:
-        return
-    global solution
     # mark as visited
     start.visited = True
     solution.append(start)
     # stop if found cycle
     if len(solution) == n:
         if start in solution[0].next:
-            print(" Hamilton's cycle was founded ")
+            print(" Hamilton's cycle was found ")
             yeah = True
             return
     # if wasn't visited recursive go to the next
     for i in start.next:
-        if not i.visited:
-            hamiltonCycleTemp(i)
+        if not i.visited: hamiltonCycleTemp(i)
     # if wasn't found clean list from this item
     if not yeah:
         solution.remove(start)
@@ -86,14 +78,15 @@ def makeList():
     adjacencyList = []
     for i in range(n):
         adjacencyList.append(Vertex(i))
-    edges = 0
-    adjacencyList[-1].next.append(adjacencyList[0])
-    adjacencyList[0].next.append(adjacencyList[-1])
-    edges += 1
+    edges = 1
+    # make cycle
     for i in range(len(adjacencyList) - 1):
         adjacencyList[i].next.append(adjacencyList[i + 1])
         adjacencyList[i + 1].next.append(adjacencyList[i])
         edges += 1
+    adjacencyList[-1].next.append(adjacencyList[0])
+    adjacencyList[0].next.append(adjacencyList[-1])
+    # add vertexes
     while edges != m:
         temp = random.choice(adjacencyList)
         tempNext = random.choice(adjacencyList)
@@ -151,7 +144,8 @@ def test1():
     minimum = input("Enter start point of test (number of vertexes): ")
     maximum = input("Enter finish point of test: ")
     if maximum.isdigit() and minimum.isdigit() and int(minimum) >= 10:
-        for again in range(10):
+        # for again in range(10):
+        if True:
             hamiltonTime, hamilton, euler, eulerTime = [], [], [], []
             maximum, minimum = int(maximum), int(minimum)
             nList = []
@@ -161,15 +155,15 @@ def test1():
             for n in range(minimum, maximum, dif):
                 nList.append(n)
                 yeah = False
-                m = int(n * (n - 1) // 2 * 0.7)
+                m = int(n * (n - 1) // 2 * percent)
                 makeList()
-                print(" Number of vertexes is {} , number of edges is  {} ".format(n, edges))
+                print("{:^150}".format(" Number of vertexes is {} , number of edges is  {} ".format(n, edges)))
                 startTimeHam = time.clock()
                 hamiltonCycle(adjacencyList)
                 finishTimeHam = time.clock() - startTimeHam
                 hamiltonTime.append(finishTimeHam)
                 makeListWithThree()
-                print(" Number of vertexes is {} , number of edges is  {} ".format(n, edges))
+                print("{:^150}".format(" Number of vertexes is {} , number of edges is  {} ".format(n, edges)))
                 startTimeEul = time.clock()
                 eulerCykl(adjacencyList)
                 finishTimeEul = time.clock() - startTimeEul
@@ -181,6 +175,7 @@ def test1():
             file2.write("Test from {} to {}\n".format(minimum, maximum) +  str(nList) + "\n" + str(eulerTime) + "\n")
             file2.close()
         print("finished")
+
 
 def test2():
     """
@@ -197,6 +192,7 @@ def test2():
         nList = []
         if maximum - minimum < 10: dif = 1
         else: dif = (maximum - minimum) // 10
+        # in this range make 10 tests
         for n in range(minimum, maximum, dif):
             nList.append(n)
             yeah = False
@@ -219,21 +215,24 @@ def test2():
 if __name__ == "__main__":
     # size up recursion limit
     sys.setrecursionlimit(100000000)
+    percent = 0.7
     # size up stack
     if os.name == "posix":
-        os.system("ulimit -S -s 10000000")
+        os.system("ulimit -S -s 10000000 2>/dev/null")
         print("Changed size of stack")
-    else: print("{:!^150}".format("I think that you computer won't works with more then 250 vertexes"))
+    else: print("{:!^140}".format("I think that you computer won't works with more then 250 vertexes"))
     possible = True
     exit = False
     while not exit:
         opt = input("Choose option:\n"
                 "1 \t to find in normal way Euler's cycle and Hamilton\'s cycle in graphs in input range\n"
                 "2 \t to try find Hamilton\'s cycle in graph where cycle surely not exist\n"
-                "3 \t to exit\n")
+                "3 \t to change num of edges (percents from all possible)\n"
+                "4 \t to exit\n")
         if opt.isdigit():
             if int(opt) == 1: test1()
             elif int(opt) == 2: test2()
+            elif int(opt) == 3: percent = int(input("Enter number in percents without sign: "))/100
             else: exit = True
         if not exit:
             getch = input("Continue? ")
