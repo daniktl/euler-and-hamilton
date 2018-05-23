@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-for ls in [["euler30.0", "euler70.0"], ["hamilton30.0", "hamilton70.0"], ["nothamilton"]]:
+for ls in [["euler30", "euler70"], ["hamilton30", "hamilton70"], ["nothamilton"]]:
     for name in ls:
         data = open("{}.txt".format(name), "r").read().split("\n")
         x = []
